@@ -65,23 +65,29 @@ server.get("/api/users/:id", function (req, res) {
 
 server.delete("/api/users/:id", function (req, res) {
   const id = req.params.id;
-  const userI = user.filter((indUser) => indUser.id != id);
-  if (!!id) {
-    res
-      .status(404)
-      .json({ message: "The user with the specified ID does not exist." });
-  } else if (!!userI) {
+  const userI = user.filter((indUser) => indUser.id == id);
+  if (res) {
+    if (userI.length != 0) {
+      user = user.filter((user) => user.id != id);
+      res.status(200).json(userI);
+    } else {
+      res
+        .status(404)
+        .json({ message: "The user with the specified ID does not exist." });
+    }
+  } else {
     res.status(500).json({ errorMessage: "The user could not be removed" });
-  } else res.status(200).json(userI);
+  }
 });
 
 server.put("/api/users/:id", function (req, res) {
   const id = req.params.id;
   const newUser = req.body;
   newUser.id = shortid.generate();
-  const userID = user.filter((indU) => indU.id == id);
-  if (!!id) {
-    res
+  let user1 = user.find((indU) => indU.id === id);
+  console.log(user);
+  if (!user1) {
+    return res
       .status(404)
       .json({ message: "The user with the specified ID does not exist." });
   } else if (
@@ -90,13 +96,12 @@ server.put("/api/users/:id", function (req, res) {
     newUser.bio === null ||
     newUser.bio === ""
   ) {
-    res
+    return res
       .status(400)
       .json({ errorMessage: "Please provide name and bio for the user." });
   } else if (!newUser) {
-    res
+    return res
       .status(500)
       .json({ errorMessage: "The user information could not be modified." });
-  } else user.push(newUser);
-  res.status(200).json(newUser);
+  } else res.status(200).json(user1);
 });
