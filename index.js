@@ -83,7 +83,6 @@ server.delete("/api/users/:id", function (req, res) {
 server.put("/api/users/:id", function (req, res) {
   const id = req.params.id;
   const newUser = req.body;
-  newUser.id = shortid.generate();
   let user1 = user.find((indU) => indU.id === id);
   console.log(user);
   if (!user1) {
@@ -103,5 +102,7 @@ server.put("/api/users/:id", function (req, res) {
     return res
       .status(500)
       .json({ errorMessage: "The user information could not be modified." });
-  } else res.status(200).json(user1);
+  } else user1.bio = newUser.bio;
+  user1.name = newUser.name;
+  res.status(200).json(user1);
 });
